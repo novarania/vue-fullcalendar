@@ -51,7 +51,7 @@
 
             defaultView: {
                 default() {
-                    return 'agendaWeek'
+                    return 'month'
                 },
             },
 
@@ -67,6 +67,16 @@
                     return {}
                 },
             },
+            eventLimitClick: {
+                default() {
+                    return 'popover'
+                },
+            },
+            moreLink: {
+               default() {
+                    return ''
+                }, 
+            }
         },
 
         computed: {
@@ -82,6 +92,17 @@
                     timeFormat: 'HH:mm',
                     events: this.events,
                     eventSources: this.eventSources,
+                    eventLimit: true,
+                    eventLimitText: "more",
+                    eventLimitClick: this.eventLimitClick,
+                    views: {
+                        month: {
+                            eventLimit: 5
+                        },
+                        agendaWeek: {
+                            eventLimit: 5
+                        }
+                    },
 
                     eventRender(...args) {
                         if (this.sync) {
@@ -158,6 +179,10 @@
                 this.eventSources.map(event => {
                     $(this.$el).fullCalendar('addEventSource', event)
                 })
+            })
+
+            this.$on('add-event-sources', (events)=> {                
+                $(this.$el).fullCalendar('addEventSource', events)
             })
 
             cal.fullCalendar(defaultsDeep(this.config, this.defaultConfig))
