@@ -1,13 +1,27 @@
 <template>
-    <div ref="calendar" id="calendar"></div>
+    <div ref="calendar" id="calendar">
+        <grid-loader :loading="loading" :color="color" :size="size" class="loader"></grid-loader>
+    </div>
 </template>
 
 <script>
     import defaultsDeep from 'lodash.defaultsdeep'
     import 'fullcalendar'
     import $ from 'jquery'
+    import GridLoader from 'vue-spinner/src/GridLoader.vue'
 
     export default {
+        components: {
+            GridLoader
+        },
+
+        data() {
+            return {
+                loading: false,
+                color: '#3AB982',
+                size: "20px"
+            }
+        },
         props: {
             events: {
                 default() {
@@ -76,6 +90,11 @@
                default() {
                     return ''
                 }, 
+            },
+            timezone: {
+                default() {
+                    return false;
+                }
             }
         },
 
@@ -89,7 +108,7 @@
                     selectable: this.selectable,
                     selectHelper: this.selectHelper,
                     aspectRatio: 2,
-                    timeFormat: 'HH:mm',
+                    // timeFormat: 'HH:mm',
                     events: this.events,
                     eventSources: this.eventSources,
                     eventLimit: true,
@@ -103,6 +122,16 @@
                             eventLimit: 5
                         }
                     },
+                    displayEventEnd: true,
+                    loading: function( isLoading, view ) {
+                        console.log(isLoading);
+                        if(isLoading) {// isLoading gives boolean value
+                            self.loading = true;
+                        } else {
+                            self.loading = false;
+                        }
+                    },
+                    height: "auto",
 
                     eventRender(...args) {
                         if (this.sync) {
@@ -132,6 +161,7 @@
                     dayClick(...args){
                         self.$emit('day-click', ...args)
                     },
+                    
                     select(start, end, jsEvent, view, resource) {
                         self.$emit('event-created', {
                             start,
@@ -220,3 +250,17 @@
         },
     }
 </script>
+
+<style lang="scss" scoped>
+    #calendar {
+        position: relative;
+    }
+
+    .loader {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        z-index: 1000;
+    }
+</style>
+
