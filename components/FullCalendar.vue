@@ -86,13 +86,23 @@
                     return 'popover'
                 },
             },
-            moreLink: {
+            eventLimit: {
                default() {
-                    return ''
+                    return false;
                 }, 
+            },
+            eventLimitText: {
+                default() {
+                    return false;
+                }
             },
             timezone: {
                 default() {
+                    return false;
+                }
+            },
+            views: {
+                default(){
                     return false;
                 }
             }
@@ -111,20 +121,15 @@
                     // timeFormat: 'HH:mm',
                     events: this.events,
                     eventSources: this.eventSources,
-                    eventLimit: true,
-                    eventLimitText: "more",
+                    eventLimit: this.eventLimit,
+                    eventLimitText: this.eventLimitText,
                     eventLimitClick: this.eventLimitClick,
-                    views: {
-                        month: {
-                            eventLimit: 5
-                        },
-                        agendaWeek: {
-                            eventLimit: 5
-                        }
-                    },
+                    views: this.views,
+                    timezone: this.timezone,
                     displayEventEnd: true,
+                    // nextDayThreshold:"00:00:00",
                     loading: function( isLoading, view ) {
-                        console.log(isLoading);
+                        // console.log(isLoading);
                         if(isLoading) {// isLoading gives boolean value
                             self.loading = true;
                         } else {
