@@ -10,7 +10,7 @@
     import $ from 'jquery'
     import GridLoader from 'vue-spinner/src/GridLoader.vue'
 
-    export default {
+      export default {
         components: {
             GridLoader
         },
@@ -19,7 +19,8 @@
             return {
                 loading: false,
                 color: '#3AB982',
-                size: "20px"
+                size: "20px",
+                eventsNumData: ""
             }
         },
         props: {
@@ -105,6 +106,11 @@
                 default(){
                     return false;
                 }
+            },
+            nextDayThreshold: {
+                default(){
+                    return false
+                }
             }
         },
 
@@ -127,7 +133,8 @@
                     views: this.views,
                     timezone: this.timezone,
                     displayEventEnd: true,
-                    // nextDayThreshold:"00:00:00",
+                    nextDayThreshold: this.nextDayThreshold,
+                    // resourceOrder: "id",
                     loading: function( isLoading, view ) {
                         // console.log(isLoading);
                         if(isLoading) {// isLoading gives boolean value
@@ -157,6 +164,10 @@
 
                     eventDrop(...args) {
                         self.$emit('event-drop', ...args)
+                    },
+
+                    eventDragStart(...args) {
+                        self.$emit('event-drag-start', ...args)
                     },
 
                     eventResize(...args) {
@@ -220,6 +231,20 @@
                 $(this.$el).fullCalendar('addEventSource', events)
             })
 
+            this.$on('get-events-num', (eventId)=> { 
+                var eventsData = $(this.$el).fullCalendar('clientEvents', [eventId]) 
+                if (eventsData.length > 0){
+                    self.eventsNumData = eventsData[0].title
+                }else{
+                    self.eventsNumData = ""
+                }
+                return self.eventsNumData     
+            })
+
+            this.$on('update-event', (events)=> {                
+                $(this.$el).fullCalendar('updateEvents', events)
+            })
+
             cal.fullCalendar(defaultsDeep(this.config, this.defaultConfig))
         },
 
@@ -252,6 +277,9 @@
             this.$off('render-event')
             this.$off('reload-events')
             this.$off('rebuild-sources')
+            this.$off('add-event-sources')
+            this.$off('client-events')
+            this.$off('update-event')
         },
     }
 </script>
@@ -268,4 +296,3 @@
         z-index: 1000;
     }
 </style>
-
