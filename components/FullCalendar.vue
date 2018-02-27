@@ -186,6 +186,10 @@
                             view,
                             resource
                         })
+                    },
+                    
+                    eventAfterRender(...args) {
+                        self.$emit('event-after-render', ...args)
                     }
                 }
             },
