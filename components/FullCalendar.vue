@@ -10,7 +10,7 @@
     import $ from 'jquery'
     import GridLoader from 'vue-spinner/src/GridLoader.vue'
 
-      export default {
+       export default {
         components: {
             GridLoader
         },
@@ -20,7 +20,10 @@
                 loading: false,
                 color: '#3AB982',
                 size: "20px",
-                eventsNumData: ""
+                eventsNumData: "",
+                start: "",
+                end: "",
+                viewType: ""
             }
         },
         props: {
@@ -133,8 +136,14 @@
                     views: this.views,
                     timezone: this.timezone,
                     displayEventEnd: true,
-                    nextDayThreshold: this.nextDayThreshold,
-                    // resourceOrder: "id",
+                    firstDay: 1,
+                    refetchResources: true,                    
+                    resourceLabelText: 'Contracts',
+                    resourceOrder:'id',
+                    resourceAreaWidth: '15%',
+                    resources: function(callback){
+                        // loadLocations
+                    },
                     loading: function( isLoading, view ) {
                         // console.log(isLoading);
                         if(isLoading) {// isLoading gives boolean value
@@ -187,10 +196,14 @@
                             resource
                         })
                     },
-                    
+
                     eventAfterRender(...args) {
                         self.$emit('event-after-render', ...args)
-                    }
+                    },
+
+                    resourceRender(...args) {
+                        self.$emit('resource-render', ...args)
+                    },
                 }
             },
         },
@@ -247,6 +260,12 @@
 
             this.$on('update-event', (events)=> {                
                 $(this.$el).fullCalendar('updateEvents', events)
+            })
+
+            this.$on('get-view', (events)=> {  
+                this.viewType = $(this.$el).fullCalendar('getView').type 
+                this.start = $(this.$el).fullCalendar('getView').start
+                this.end = $(this.$el).fullCalendar('getView').end
             })
 
             cal.fullCalendar(defaultsDeep(this.config, this.defaultConfig))
